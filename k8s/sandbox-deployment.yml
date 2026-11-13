@@ -14,8 +14,9 @@ spec:
       labels:
         app: sandbox
     spec:
+      serviceAccountName: resource-manager #permission for sandbox service that it can create pod and service
       containers:
-      - image:  sandbox:latest
+      - image:  sandbox:v1
         imagePullPolicy: IfNotPresent
         name:  main-sandbox-container
         resources:
