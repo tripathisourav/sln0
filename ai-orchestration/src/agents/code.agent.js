@@ -1,0 +1,32 @@
+import "dotenv/config";
+import { ChatMistralAI } from "@langchain/mistralai"
+import { ChatGoogle } from "@langchain/google/node";
+import { listFiles, readFiles, updateFiles } from "./tools.js";
+import { createAgent } from "langchain";
+
+// const model = new ChatMistralAI({
+//     model: "mistral-medium-latest",
+//     apiKey: process.env.MISTRALAI_API_KEY,
+//     "temperature": 0.7,
+// })
+
+
+const model = new ChatGoogle({
+  model: "gemini-3.8-flash-lite",
+  apiKey: process.env.GEMINI_API_KEY
+});
+
+const agent = createAgent({
+    model,
+    tools: [ listFiles, readFiles, updateFiles ],
+})
+
+await agent.invoke({
+    messages: [
+        {
+            role: "user",
+            content: "create a simple snake game in the project using react and css."
+        }
+    ]
+})
+// sk-ml5eXjp67gCdia6qFWFtNQ

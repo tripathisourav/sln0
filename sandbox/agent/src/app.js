@@ -8,6 +8,8 @@ const WORKING_DIR = '/workspace';
 const app = express()
 
 app.use(morgan('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -19,7 +21,7 @@ app.get('/', (req, res) => {
 
 /**
  * @route GET /list-files
- * @description Lists all files in the working directory and its subdirectories. Returns a JSON object with the file paths relative to the working directory. exclude directories like node_modules, .git,dist, etc.
+ * @description Lists all files in the working directory and its subdirectories. Returns a JSON object with the file paths relative to the working directory. exclude directories like node_modules, .git, dist, etc.
  * - eg. {
  *     "files": [
  *         "file1.txt",
@@ -28,30 +30,54 @@ app.get('/', (req, res) => {
  *     ]
  * }
  */
-app.get("/list-files", async (req, res) => {
+const listFiles = async (dir, baseDir) => {
+    const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+    const files = [];
 
-    const listFiles = async (dir, baseDir) => {
-        const entries = await fs.promises.readdir(dir, { withFileTypes: true });
-        const files = [];
+    for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        const relativePath = path.relative(baseDir, fullPath);
 
-        for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-            const relativePath = path.relative(baseDir, fullPath);
-
-            // Exclude certain directories
-            if (entry.isDirectory() && [ 'node_modules', '.git', 'dist' ].includes(entry.name)) {
-                continue;
-            }
-
-            if (entry.isDirectory()) {
-                files.push(...await listFiles(fullPath, baseDir));
-            } else {
-                files.push(relativePath);
-            }
+        // Exclude certain directories
+        if (entry.isDirectory() && ['node_modules', '.git', 'dist'].includes(entry.name)) {
+            continue;
         }
 
-        return files;
+        if (entry.isDirectory()) {
+            files.push(...await listFiles(fullPath, baseDir));
+        } else {
+            files.push(relativePath);
+        }
     }
+
+    return files;
+}
+
+app.get("/list-files", async (req, res) => {
+
+    // Notice that listFiles is defined inside the app.get("/list-files", ...) route handler, meaning JavaScript re-creates that function in memory on every request. Moving const listFiles = ... outside the route handler keeps the code cleaner and avoids unnecessary re-allocation.
+    // const listFiles = async (dir, baseDir) => {
+    //     const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+    //     const files = [];
+
+    //     for (const entry of entries) {
+    //         const fullPath = path.join(dir, entry.name);
+    //         const relativePath = path.relative(baseDir, fullPath);
+
+    //         // Exclude certain directories
+    //         if (entry.isDirectory() && [ 'node_modules', '.git', 'dist' ].includes(entry.name)) {
+    //             continue;
+    //         }
+
+    //         if (entry.isDirectory()) {
+    //             files.push(...await listFiles(fullPath, baseDir));
+    //         } else {
+    //             files.push(relativePath);
+    //         }
+    //     }
+
+    //     return files;
+    // }
 
     try {
         const files = await listFiles(WORKING_DIR, WORKING_DIR);
@@ -91,18 +117,17 @@ app.get("/read-files", async (req, res) => {
         try {
             const content = await fs.promises.readFile(filePath, 'utf-8');
             return {
-                [ filePath.replace(WORKING_DIR, '') ]: content,
+                [filePath.replace(WORKING_DIR, '')]: content,
             }
         } catch (err) {
             return {
-                [ filePath.replace(WORKING_DIR, '') ]: `Error reading file: ${err.message}`,
+                [filePath.replace(WORKING_DIR, '')]: `Error reading file: ${err.message}`,
             }
         }
     }));
 
-res.status(200).json({
+    res.status(200).json({
         message: 'Elements in working directory',
-        elements,
         message: 'File contents',
         files: results,
     });
@@ -135,11 +160,11 @@ app.patch("/update-files", async (req, res) => {
             await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
             await fs.promises.writeFile(filePath, content, 'utf-8');
             return {
-                [ filePath ]: 'File updated successfully',
+                [filePath]: 'File updated successfully',
             }
         } catch (err) {
             return {
-                [ filePath ]: `Error updating file: ${err.message}`,
+                [filePath]: `Error updating file: ${err.message}`,
             }
         }
     }));
@@ -173,11 +198,11 @@ app.post("/create-files", async (req, res) => {
             await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
             await fs.promises.writeFile(filePath, content, 'utf-8');
             return {
-                [ filePath ]: 'File created successfully',
+                [filePath]: 'File created successfully',
             }
         } catch (err) {
             return {
-                [ filePath ]: `Error creating file: ${err.message}`,
+                [filePath]: `Error creating file: ${err.message}`,
             }
         }
     }));
