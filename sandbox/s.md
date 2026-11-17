@@ -7,3 +7,5 @@ terminal path -> cd ~/Desktop/cohort2dev/projects/capstone
 logs - kubectl logs deployment/sandbox-deployment -f
 
 delete cluster - kubectl delete -f ./k8s
+
+skaffold dev -v debug
