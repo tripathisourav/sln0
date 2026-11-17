@@ -9,3 +9,6 @@ logs - kubectl logs deployment/sandbox-deployment -f
 delete cluster - kubectl delete -f ./k8s
 
 skaffold dev -v debug
+
+
+kubectl create secret generic ai-secret --from-literal=GEMINI_API_KEY=YOUR_API_KEY
