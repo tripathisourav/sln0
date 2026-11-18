@@ -8,7 +8,7 @@
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-cloud-DC382D?logo=redis&logoColor=white)
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-CloudAMQP-FF6600?logo=rabbitmq&logoColor=white)
-![MistralAI](https://img.shields.io/badge/MistralAI-mistral--large--latest-FF7000)
+![Gemini](https://img.shields.io/badge/Google_Gemini-gemini--3.5--flash-4285F4?logo=google-gemini&logoColor=white)
 ![LangChain](https://img.shields.io/badge/LangChain-LangGraph-1C3C3C?logo=langchain)
 ![License](https://img.shields.io/badge/license-ISC-blue)
 ![Build](https://img.shields.io/badge/build-skaffold-00ADD8)
