@@ -425,9 +425,9 @@ The AI layer uses **LangChain + LangGraph** to build a stateful ReAct agent:
 
 ```
 LangGraph createAgent({
-  model:  ChatMistralAI("mistral-large-latest"),
+  model:  ChatGoogle("gemini-3.5-flash-lite"),
   tools:  [list_files, read_files, update_files],
-  systemPrompt: "FrontendForge — expert AI frontend engineer…",
+  systemPrompt: "sln0 — expert AI frontend engineer…",
   recursionLimit: 100
 })
 ```
@@ -481,10 +481,10 @@ File writes from `update_files` land on the shared `emptyDir` volume. Vite's fil
 
 | Parameter | Value |
 |---|---|
-| Provider | MistralAI |
-| Model ID | `mistral-large-latest` |
+| Provider | GeminiAI |
+| Model ID | `gemini-3.5-flash-lite` |
 | Temperature | `0.7` |
-| Context window | <!-- TODO: fill in — check Mistral docs for mistral-large context limit --> |
+| Context window | <!-- TODO: fill in — check Gemini docs for gemini-3.5 context limit --> |
 | Max recursion | 100 LangGraph steps |
 
 ### 5.8 Context Window Management
@@ -672,7 +672,7 @@ All sensitive values are stored in Kubernetes `Opaque` Secrets, referenced in de
 | `database` | `AUTH`, `SANDBOX`, `AI`, `REDIS_URL`, `RABBITMQ_URL`, `RABBITMQ_PORT` | auth, sandbox, router, ai |
 | `jwt` | `JWT_SECRET` | auth |
 | `google` | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, `EMAIL_USER` | auth, notification |
-| `ai-secret` | `MISTRAL_API_KEY` | ai-orchestration |
+| `ai-secret` | `GEMINI_API_KEY` | ai-orchestration |
 
 > **Warning:** `k8s/secrets.yml` currently contains plaintext credentials and is committed to the repository. This must be replaced with an external secrets manager (e.g., Sealed Secrets, HashiCorp Vault, External Secrets Operator) before any production deployment. See [Section 12](#12-security-considerations).
 
