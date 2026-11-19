@@ -18,6 +18,3 @@ app.get('/api/status/healthz', (req, res) => {
 app.use('/api/ai', agentRouter);
 
 export default app;
-
-// kubectl create secret generic ai-secret \
-    // --from-literal=MISTRAL_API_KEY=
